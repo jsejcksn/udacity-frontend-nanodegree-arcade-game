@@ -1,46 +1,106 @@
-// Enemies our player must avoid
-var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+// Initialization values for each character
+const config = {
+  enemy: [
+    [0, 60, 100], // x, y, speed
+    [0, 144, 100],
+    [0, 227, 100]
+  ],
+  player: [202, 405] // x, y
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
+class Character {
+  constructor (x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+  }
+
+  // For image dimensions; likely needs to be edited
+  static genDimensions (obj) {
+    let img = new Image();
+    img.onload = () => {
+      obj.height = img.height;
+      obj.width = img.width;
+      console.log((obj.sprite === 'images/enemy-bug.png' ? 'enemy' : 'player') + ' x:' + obj.x + ' y:' + obj.y + ' height:' + obj.height + ' width:' + obj.width);
+    };
+    img.src = obj.sprite;
+  }
+
+  render () {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+}
+
+class Enemy extends Character {
+  constructor (x, y, speed) {
+    super(x, y);
+    this.speed = speed || 0;
+    this.sprite = 'images/enemy-bug.png';
+    Character.genDimensions(this);
+  }
+
+  // Might need to be tweaked
+  collision (obj) {
+    if (this.x < obj.x + obj.width
+      && this.x + this.width > obj.x
+      && this.y < obj.y + obj.height
+      && this.y + this.height > obj.y) {
+      console.log('collision detected!');
+    }
+  }
+
+  update (dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-};
+    this.collision(player);
+  }
+}
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+class Player extends Character {
+  constructor (x, y) {
+    super(x, y);
+    this.sprite = 'images/char-boy.png';
+    Character.genDimensions(this);
+  }
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+  handleInput (key) {
+    const allowedKeys = [
+      'ArrowUp',
+      'ArrowRight',
+      'ArrowDown',
+      'ArrowLeft'
+    ];
 
+    if (allowedKeys.includes(key)) {
+      switch (key) {
+        case 'ArrowUp':
+          console.log('up');
+          break;
+        case 'ArrowRight':
+          console.log('right');
+          break;
+        case 'ArrowDown':
+          console.log('down');
+          break;
+        case 'ArrowLeft':
+          console.log('left');
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+  update () {}
+}
 
+const allEnemies = [];
+for (let i = 0; i < 3; i ++) {
+  const enemy = new Enemy(config.enemy[i][0], config.enemy[i][1], config.enemy[i][2]);
+  allEnemies.push(enemy);
+}
+const player = new Player(config.player[0], config.player[1]);
 
-
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-    };
-
-    player.handleInput(allowedKeys[e.keyCode]);
+document.addEventListener('keyup', (ev) => {
+  player.handleInput(ev.key);
 });
