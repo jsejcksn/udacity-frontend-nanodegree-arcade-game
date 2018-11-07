@@ -1,4 +1,4 @@
-// Initialization values for each character
+// Initialization values
 const config = {
   canvas: {
     height: 606,
@@ -33,7 +33,6 @@ class Character {
     this.y = y || 0;
   }
 
-  // For image dimensions; likely needs to be edited
   static genDimensions (obj, isEnemy) {
     let img = new Image();
     img.onload = () => {
