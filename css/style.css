@@ -1,3 +1,33 @@
 body {
-    text-align: center;
+  background-color: black;
+  color: white;
+}
+
+canvas:last-of-type {
+  height: 606px;
+  display: block;
+  margin: 0 auto;
+  width: 505px;
+}
+
+header {
+  height: 6rem;
+  margin: 0 auto;
+  position: relative;
+  width: 505px;
+}
+
+h1 {
+  font-size: 4rem;
+  margin: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.level {
+  font-size: 2rem;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
