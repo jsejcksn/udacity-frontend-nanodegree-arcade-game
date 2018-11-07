@@ -128,8 +128,9 @@ class Player extends Character {
   }
 
   levelUp () {
+    let level = document.querySelector('.level > span:last-of-type');
+    level.textContent = parseInt(level.textContent, 10) + 1;
     this.resetPosition();
-    console.log('level up!')
   }
 
   resetPosition () {
