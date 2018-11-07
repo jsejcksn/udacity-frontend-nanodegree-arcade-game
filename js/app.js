@@ -4,23 +4,16 @@ const config = {
     height: 606,
     width: 505
   },
-  enemies: [
-    {
-      origin: [0, 176.5],
-      speed: 100
-    },
-    {
-      origin: [0, 259.5],
-      speed: 100
-    },
-    {
-      origin: [0, 342.5],
-      speed: 100
+  enemies: {
+    speed: {
+      min: 100,
+      max: 300
     }
-  ],
+  },
   player: {
     origin: [251.5, 511]
   },
+  rows: [176.5, 259.5, 342.5],
   tile: {
     height: 83,
     width: 101
@@ -50,6 +43,10 @@ class Character {
       obj.y = obj.origin[1];
     };
     img.src = obj.sprite;
+  }
+
+  static getRandomInt (max, min) {
+    return Math.floor(Math.random() * (max - (min || 0) + 1)) + (min || 0);
   }
 
   render () {
@@ -142,8 +139,11 @@ class Player extends Character {
 
 const allEnemies = [];
 for (let i = 0; i < 3; i ++) {
-  const enemy = new Enemy(config.enemies[i].origin[0], config.enemies[i].origin[1], config.enemies[i].speed);
-  allEnemies.push(enemy);
+  allEnemies.push(new Enemy(
+    0,
+    config.rows[i],
+    Character.getRandomInt(config.enemies.speed.max, config.enemies.speed.min)
+  ));
 }
 const player = new Player(config.player.origin[0], config.player.origin[1]);
 
