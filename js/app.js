@@ -51,7 +51,9 @@ class Character {
 
   static getNewRow () {
     if (gameState.rows.length === 0) {
-      gameState.rows = config.rows;
+      for (let i = 0, j = config.rows.length; i < j; i++) {
+        gameState.rows.push(config.rows[i]);
+      }
     }
     const length = gameState.rows.length;
     return gameState.rows.splice(
@@ -110,28 +112,16 @@ class Player extends Character {
   handleInput (key) {
     switch (key) {
       case 'ArrowUp':
-        this.y -= config.tile.height;
-        if (this.y < (this.origin[1] - config.tile.height * 4)) {
-          this.levelUp();
-        }
+        this.move('up');
         break;
       case 'ArrowRight':
-        this.x += config.tile.width;
-        if (this.x > (this.origin[0] + config.tile.width * 2)) {
-          this.x -= config.tile.width;
-        }
+        this.move('right');
         break;
       case 'ArrowDown':
-        this.y += config.tile.height;
-        if (this.y > this.origin[1]) {
-          this.y -= config.tile.height;
-        }
+        this.move('down');
         break;
       case 'ArrowLeft':
-        this.x -= config.tile.width;
-        if (this.x < (this.origin[0] - config.tile.width * 2)) {
-          this.x += config.tile.width;
-        }
+        this.move('left');
         break;
       default:
         break;
@@ -150,6 +140,37 @@ class Player extends Character {
       Character.getRandomInt(config.enemies.speed.max, config.enemies.speed.min)
     ));
     this.resetPosition();
+  }
+
+  move (direction) {
+    switch (direction) {
+      case 'up':
+        this.y -= config.tile.height;
+        if (this.y < (this.origin[1] - config.tile.height * 4)) {
+          this.levelUp();
+        }
+        break;
+      case 'right':
+        this.x += config.tile.width;
+        if (this.x > (this.origin[0] + config.tile.width * 2)) {
+          this.x -= config.tile.width;
+        }
+        break;
+      case 'down':
+        this.y += config.tile.height;
+        if (this.y > this.origin[1]) {
+          this.y -= config.tile.height;
+        }
+        break;
+      case 'left':
+        this.x -= config.tile.width;
+        if (this.x < (this.origin[0] - config.tile.width * 2)) {
+          this.x += config.tile.width;
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   resetPosition () {
