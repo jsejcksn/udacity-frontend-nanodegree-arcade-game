@@ -1,11 +1,19 @@
 // Initialization values for each character
 const config = {
-  enemy: [
-    [0, 60, 100], // x, y, speed
-    [0, 144, 100],
-    [0, 227, 100]
+  enemies: [
+    [0, 176.5, 100], // x, y, speed
+    [0, 259.5, 100],
+    [0, 342.5, 100]
   ],
-  player: [202, 405] // x, y
+  player: [251.5, 511], // x center, y center
+  canvas: {
+    height: 606,
+    width: 505
+  },
+  tile: {
+    height: 83,
+    width: 101
+  }
 };
 
 class Character {
@@ -15,12 +23,21 @@ class Character {
   }
 
   // For image dimensions; likely needs to be edited
-  static genDimensions (obj) {
+  static genDimensions (obj, isEnemy) {
     let img = new Image();
     img.onload = () => {
       obj.height = img.height;
       obj.width = img.width;
-      console.log((obj.sprite === 'images/enemy-bug.png' ? 'enemy' : 'player') + ' x:' + obj.x + ' y:' + obj.y + ' height:' + obj.height + ' width:' + obj.width);
+      // console.log((obj.sprite === 'images/enemy-bug.png' ? 'enemy' : 'player') + ' x:' + obj.x + ' y:' + obj.y + ' height:' + obj.height + ' width:' + obj.width);
+      if (isEnemy) {
+        obj.origin = [obj.x - obj.width];
+      }
+      else {
+        obj.origin = [obj.x - obj.width / 2];
+      }
+      obj.origin.push(obj.y - obj.height / 2);
+      obj.x = obj.origin[0];
+      obj.y = obj.origin[1];
     };
     img.src = obj.sprite;
   }
@@ -31,64 +48,74 @@ class Character {
 }
 
 class Enemy extends Character {
-  constructor (x, y, speed) {
+  constructor (x, y, speed, sprite) {
     super(x, y);
     this.speed = speed || 0;
-    this.sprite = 'images/enemy-bug.png';
-    Character.genDimensions(this);
+    this.sprite = sprite || 'images/enemy-bug.png';
+    Character.genDimensions(this, true);
   }
 
   // Might need to be tweaked
-  collision (obj) {
+  checkCollision (obj) {
     if (this.x < obj.x + obj.width
       && this.x + this.width > obj.x
       && this.y < obj.y + obj.height
       && this.y + this.height > obj.y) {
-      console.log('collision detected!');
+      obj.resetPosition();
+    }
+  }
+
+  move (dt) {
+    this.x += this.speed * dt;
+    if (this.x > config.canvas.width + this.speed * dt) {
+      this.x = this.origin[0];
     }
   }
 
   update (dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-    this.collision(player);
+    this.move(dt);
+    this.checkCollision(player);
   }
 }
 
 class Player extends Character {
-  constructor (x, y) {
+  constructor (x, y, sprite) {
     super(x, y);
-    this.sprite = 'images/char-boy.png';
+    this.sprite = sprite || 'images/char-boy.png';
     Character.genDimensions(this);
   }
 
   handleInput (key) {
-    const allowedKeys = [
-      'ArrowUp',
-      'ArrowRight',
-      'ArrowDown',
-      'ArrowLeft'
-    ];
-
-    if (allowedKeys.includes(key)) {
-      switch (key) {
-        case 'ArrowUp':
-          console.log('up');
-          break;
-        case 'ArrowRight':
-          console.log('right');
-          break;
-        case 'ArrowDown':
-          console.log('down');
-          break;
-        case 'ArrowLeft':
-          console.log('left');
-          break;
-        default:
-          break;
-      }
+    switch (key) {
+      case 'ArrowUp':
+        this.y -= config.tile.height;
+        break;
+      case 'ArrowRight':
+        this.x += config.tile.width;
+        if (this.x > (this.origin[0] + config.tile.width * 2)) {
+          this.x = (this.origin[0] + config.tile.width * 2);
+        }
+        break;
+      case 'ArrowDown':
+        this.y += config.tile.height;
+        if (this.y > this.origin[1]) {
+          this.y = this.origin[1];
+        }
+        break;
+      case 'ArrowLeft':
+        this.x -= config.tile.width;
+        if (this.x < (this.origin[0] - config.tile.width * 2)) {
+          this.x = (this.origin[0] - config.tile.width * 2);
+        }
+        break;
+      default:
+        break;
     }
+  }
+
+  resetPosition () {
+    this.x = this.origin[0];
+    this.y = this.origin[1];
   }
 
   update () {}
@@ -96,7 +123,7 @@ class Player extends Character {
 
 const allEnemies = [];
 for (let i = 0; i < 3; i ++) {
-  const enemy = new Enemy(config.enemy[i][0], config.enemy[i][1], config.enemy[i][2]);
+  const enemy = new Enemy(config.enemies[i][0], config.enemies[i][1], config.enemies[i][2]);
   allEnemies.push(enemy);
 }
 const player = new Player(config.player[0], config.player[1]);
