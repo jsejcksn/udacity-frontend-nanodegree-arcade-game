@@ -93,19 +93,19 @@ class Player extends Character {
       case 'ArrowRight':
         this.x += config.tile.width;
         if (this.x > (this.origin[0] + config.tile.width * 2)) {
-          this.x = (this.origin[0] + config.tile.width * 2);
+          this.x -= config.tile.width;
         }
         break;
       case 'ArrowDown':
         this.y += config.tile.height;
         if (this.y > this.origin[1]) {
-          this.y = this.origin[1];
+          this.y -= config.tile.height;
         }
         break;
       case 'ArrowLeft':
         this.x -= config.tile.width;
         if (this.x < (this.origin[0] - config.tile.width * 2)) {
-          this.x = (this.origin[0] - config.tile.width * 2);
+          this.x += config.tile.width;
         }
         break;
       default:
