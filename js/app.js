@@ -1,14 +1,25 @@
 // Initialization values for each character
 const config = {
-  enemies: [
-    [0, 176.5, 100], // x, y, speed
-    [0, 259.5, 100],
-    [0, 342.5, 100]
-  ],
-  player: [251.5, 511], // x center, y center
   canvas: {
     height: 606,
     width: 505
+  },
+  enemies: [
+    {
+      origin: [0, 176.5],
+      speed: 100
+    },
+    {
+      origin: [0, 259.5],
+      speed: 100
+    },
+    {
+      origin: [0, 342.5],
+      speed: 100
+    }
+  ],
+  player: {
+    origin: [251.5, 511]
   },
   tile: {
     height: 83,
@@ -131,10 +142,10 @@ class Player extends Character {
 
 const allEnemies = [];
 for (let i = 0; i < 3; i ++) {
-  const enemy = new Enemy(config.enemies[i][0], config.enemies[i][1], config.enemies[i][2]);
+  const enemy = new Enemy(config.enemies[i].origin[0], config.enemies[i].origin[1], config.enemies[i].speed);
   allEnemies.push(enemy);
 }
-const player = new Player(config.player[0], config.player[1]);
+const player = new Player(config.player.origin[0], config.player.origin[1]);
 
 document.addEventListener('keyup', (ev) => {
   player.handleInput(ev.key);
