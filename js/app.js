@@ -20,6 +20,10 @@ const config = {
   }
 };
 
+const gameState = {
+  rows: [176.5, 259.5, 342.5]
+};
+
 class Character {
   constructor (x, y) {
     this.x = x || 0;
@@ -43,6 +47,17 @@ class Character {
       obj.y = obj.origin[1];
     };
     img.src = obj.sprite;
+  }
+
+  static getNewRow () {
+    if (gameState.rows.length === 0) {
+      gameState.rows = config.rows;
+    }
+    const length = gameState.rows.length;
+    return gameState.rows.splice(
+      this.getRandomInt(length - 1),
+      1
+    )[0];
   }
 
   static getRandomInt (max, min) {
@@ -126,6 +141,14 @@ class Player extends Character {
   levelUp () {
     let level = document.querySelector('.level > span:last-of-type');
     level.textContent = parseInt(level.textContent, 10) + 1;
+    allEnemies.forEach((enemy) => {
+      enemy.speed *= 1.1;
+    });
+    allEnemies.push(new Enemy(
+      0,
+      Character.getNewRow(),
+      Character.getRandomInt(config.enemies.speed.max, config.enemies.speed.min)
+    ));
     this.resetPosition();
   }
 
