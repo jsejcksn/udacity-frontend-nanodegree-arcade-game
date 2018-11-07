@@ -89,6 +89,9 @@ class Player extends Character {
     switch (key) {
       case 'ArrowUp':
         this.y -= config.tile.height;
+        if (this.y < (this.origin[1] - config.tile.height * 4)) {
+          this.levelUp();
+        }
         break;
       case 'ArrowRight':
         this.x += config.tile.width;
@@ -111,6 +114,11 @@ class Player extends Character {
       default:
         break;
     }
+  }
+
+  levelUp () {
+    this.resetPosition();
+    console.log('level up!')
   }
 
   resetPosition () {
