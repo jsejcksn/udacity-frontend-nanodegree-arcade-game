@@ -32,7 +32,7 @@ class Character {
 
   static genDimensions (obj, isEnemy) {
     let img = new Image();
-    img.onload = () => {
+    img.addEventListener('load', () => {
       obj.height = img.height;
       obj.width = img.width;
       // console.log((obj.sprite === 'images/enemy-bug.png' ? 'enemy' : 'player') + ' x:' + obj.x + ' y:' + obj.y + ' height:' + obj.height + ' width:' + obj.width);
@@ -45,7 +45,7 @@ class Character {
       obj.origin.push(obj.y - obj.height / 2);
       obj.x = obj.origin[0];
       obj.y = obj.origin[1];
-    };
+    });
     img.src = obj.sprite;
   }
 
@@ -109,22 +109,52 @@ class Player extends Character {
     Character.genDimensions(this);
   }
 
-  handleInput (key) {
-    switch (key) {
-      case 'ArrowUp':
-        this.move('up');
-        break;
-      case 'ArrowRight':
-        this.move('right');
-        break;
-      case 'ArrowDown':
-        this.move('down');
-        break;
-      case 'ArrowLeft':
-        this.move('left');
-        break;
-      default:
-        break;
+  handleInput (ev) {
+    if (ev.type === 'keyup') {
+      switch (ev.key) {
+        case 'ArrowUp':
+          this.move('up');
+          break;
+        case 'ArrowRight':
+          this.move('right');
+          break;
+        case 'ArrowDown':
+          this.move('down');
+          break;
+        case 'ArrowLeft':
+          this.move('left');
+          break;
+        default:
+          break;
+      }
+    }
+    else if (ev.type === 'click') {
+      const x = getCursorPosition(ev)[0];
+      const y = getCursorPosition(ev)[1];
+      const top = 383;
+      const left = 100;
+      if (y > top && y < top + config.tile.height) {
+        if (x > left + config.tile.width && x < left + config.tile.width * 2) {
+          this.move('up');
+        }
+      }
+      else if (y > top + config.tile.height && y < top + config.tile.height * 2) {
+        if (x > left && x < left + config.tile.width) {
+          this.move('left');
+        }
+        else if (x > left + config.tile.width && x < left + config.tile.width * 2) {
+          this.move('down');
+        }
+        else if (x > left + config.tile.width * 2 && x < left + config.tile.width * 3) {
+          this.move('right');
+        }
+      }
+    }
+    function getCursorPosition (ev) {
+      const rect = document.querySelector('canvas:last-of-type').getBoundingClientRect();
+      const x = ev.clientX - rect.left;
+      const y = ev.clientY - rect.top;
+      return [x, y];
     }
   }
 
@@ -192,5 +222,10 @@ for (let i = 0; i < 3; i ++) {
 const player = new Player(config.player.origin[0], config.player.origin[1]);
 
 document.addEventListener('keyup', (ev) => {
-  player.handleInput(ev.key);
+  player.handleInput(ev);
+});
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('canvas:last-of-type').addEventListener('click', (ev) => {
+    player.handleInput(ev);
+  });
 });
