@@ -128,9 +128,9 @@ class Player extends Character {
           break;
       }
     }
-    else if (ev.type === 'click') {
-      const x = getCursorPosition(ev)[0];
-      const y = getCursorPosition(ev)[1];
+    else if (ev.type === 'touchstart') {
+      const x = getTouchPosition(ev)[0];
+      const y = getTouchPosition(ev)[1];
       const top = 383;
       const left = 100;
       if (y > top && y < top + config.tile.height) {
@@ -150,10 +150,10 @@ class Player extends Character {
         }
       }
     }
-    function getCursorPosition (ev) {
+    function getTouchPosition (ev) {
       const rect = document.querySelector('canvas:last-of-type').getBoundingClientRect();
-      const x = ev.clientX - rect.left;
-      const y = ev.clientY - rect.top;
+      const x = ev.touches[0].pageX - rect.left;
+      const y = ev.touches[0].pageY - rect.top;
       return [x, y];
     }
   }
@@ -225,7 +225,8 @@ document.addEventListener('keyup', (ev) => {
   player.handleInput(ev);
 });
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('canvas:last-of-type').addEventListener('click', (ev) => {
+  document.querySelector('canvas:last-of-type').addEventListener('touchstart', (ev) => {
+    ev.preventDefault();
     player.handleInput(ev);
   });
 });
